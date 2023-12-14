@@ -1,12 +1,39 @@
 import random
+import requests
+
+def obter_semente_aleatoria():
+    try:
+        response = requests.get("https://www.random.org/integers/?num=1&min=1&max=1000000000&col=1&base=10&format=plain&rnd=new")
+        response.raise_for_status()
+        seed = int(response.text.strip())
+        return seed
+    except requests.RequestException as e:
+        print(f"Erro ao obter a semente aleatória: {e}")
+        return None
+    
+def obter_bytes_aleatorios(length=64):
+    try:
+        response = requests.get(f"https://www.random.org/cgi-bin/randbyte?nbytes={length}&format=h")
+        response.raise_for_status()
+        bytes_aleatorios = bytes.fromhex(''.join(response.text.strip().split()))
+        return bytes_aleatorios
+    except requests.RequestException as e:
+        print(f"Erro ao obter bytes aleatórios: {e}")
+        return None
+    except ValueError:
+        print(f"Erro ao obter bytes aleatórios.")
+        return None
 
 def gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero, seed=None):
     if not (0 < n_grupos <= (max_numero - min_numero + 1) // n_numeros_por_grupo):
         raise ValueError("Número de grupos inválido")
     
-    if seed is not None:
-        random.seed(seed)
-
+    if seed is None:
+        # Obtém a semente aleatória do serviço Random.org
+        seed = obter_bytes_aleatorios()
+    
+    random.seed(seed)
+    
     numeros_disponiveis = []
     grupos = []
 
@@ -50,7 +77,7 @@ def coletar_valores_entrada():
 
 
 if __name__ == "__main__":
-    coletar_valores_entrada()
+    #coletar_valores_entrada()
     n_grupos = 5  # Altere o número de grupos conforme necessário
     n_numeros_por_grupo = 6
     min_numero = 1
