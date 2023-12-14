@@ -1,8 +1,11 @@
 import random
 
-def gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero):
+def gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero, seed=None):
     if not (0 < n_grupos <= (max_numero - min_numero + 1) // n_numeros_por_grupo):
         raise ValueError("Número de grupos inválido")
+    
+    if seed is not None:
+        random.seed(seed)
 
     numeros_disponiveis = []
     grupos = []
@@ -33,8 +36,12 @@ def coletar_valores_entrada():
         n_numeros_por_grupo = int(input("Digite o número de números por grupo: "))
         min_numero = int(input("Digite o número mínimo disponível: "))
         max_numero = int(input("Digite o número máximo disponível: "))
+        try:
+            seed = int(input("Digite a semente aleatória (deixe em branco para aleatoriedade padrão): "))
+        except ValueError:
+            seed = None
 
-        grupos = gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero)
+        grupos = gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero, seed)
         imprimir_grupos(grupos)
         exit()
 
@@ -48,7 +55,8 @@ if __name__ == "__main__":
     n_numeros_por_grupo = 6
     min_numero = 1
     max_numero = 60
+    seed = None # '625EZpEUy8dx2K@$#@$S2YtqfT968' # Torna os resultados reproduzíveis (sempre iguais)
 
-    grupos = gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero)
+    grupos = gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero, seed)
 
     imprimir_grupos(grupos)
