@@ -1,12 +1,20 @@
 import random
 
 def gerar_grupos(n_grupos, n_numeros_por_grupo, min_numero, max_numero):
+    numeros_disponiveis = []
     grupos = []
 
     for _ in range(n_grupos):
-        grupo = random.sample(range(min_numero, max_numero + 1), n_numeros_por_grupo)
-        grupo.sort()  # Ordena os números em ordem crescente
-        grupos.append(grupo)
+        # sempre que esgotar os numeros, reinicia
+        if len(numeros_disponiveis) < n_numeros_por_grupo:
+            numeros_disponiveis = list(range(min_numero, max_numero + 1))
+
+        numeros_grupo = random.sample(numeros_disponiveis, n_numeros_por_grupo)
+        numeros_grupo.sort()
+        grupos.append(numeros_grupo)
+
+        # Remove os números já escolhidos para evitar repetição
+        numeros_disponiveis = list(set(numeros_disponiveis) - set(numeros_grupo))
 
     return grupos
 
