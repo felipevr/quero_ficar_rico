@@ -1,18 +1,46 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 import random
 from time import sleep
 
+
 # PARAMETROS:
 
-bilhetes = 2
-numerosPorBilhete = 9
-maiorNumeroAceito = 60
+bilhetes = 12
+
+# JOGOS:
+jogo = 'lotofacil2'  # 'lotofacil1', 'lotofacil2', 'megasena', 'megasena7', 'megasena8', 'quina'
+
+
+def configurarNumerosLoteria(jogo):
+	global bilhetes, numerosPorBilhete, maiorNumeroAceito
+	if jogo == 'lotofacil1':
+		numerosPorBilhete = 15
+		maiorNumeroAceito = 25
+	elif jogo == 'lotofacil2':
+		numerosPorBilhete = 16
+		maiorNumeroAceito = 25
+	elif jogo == 'megasena':
+		numerosPorBilhete = 6
+		maiorNumeroAceito = 60
+	elif jogo == 'megasena7':
+		numerosPorBilhete = 7
+		maiorNumeroAceito = 60
+	elif jogo == 'megasena8':
+		numerosPorBilhete = 8
+		maiorNumeroAceito = 60
+	elif jogo == 'quina':
+		numerosPorBilhete = 5
+		maiorNumeroAceito = 80
+
+
 
 #
 #  NÃO ALTERAR NADA DAQUI PARA BAIXO
 #
 
+numerosPorBilhete = 1
+maiorNumeroAceito = 1
 
 used = []
 
@@ -77,7 +105,9 @@ def main(bilhetes, numerosPorBilhete):
 		#print('{:.2d}'.format(ticket))
 		
 		#sleep(1)
-		
+
+# Configurar os números de loteria de acordo com o jogo
+configurarNumerosLoteria(jogo)		
 
 main(bilhetes, numerosPorBilhete)
 # main(5, 9)
