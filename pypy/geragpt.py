@@ -1,5 +1,5 @@
 import random
-
+import itertools
 
 def gerar_jogos(qtd_jogos: int, tipo: str, dezenas_por_jogo: int = None,
                 fixos=None, excluidos=None, seed=None):
@@ -73,16 +73,71 @@ def gerar_jogos(qtd_jogos: int, tipo: str, dezenas_por_jogo: int = None,
     return jogos
 
 
-# Exemplo de uso
+def is_subset_game(game_a, game_b):
+    """Retorna True se todos os números de `game_a` estiverem em `game_b`."""
+    return set(game_a).issubset(set(game_b))
+
+
+def find_redundant_games(jogos):
+    """Retorna a lista de índices de jogos que estão totalmente contidos em outro jogo.
+
+    Um jogo A é considerado redundante se existe algum jogo B (B != A) tal que A ⊆ B.
+    """
+    sets = [set(j) for j in jogos]
+    redundant = set()
+    n = len(sets)
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                continue
+            if sets[i].issubset(sets[j]):
+                redundant.add(i)
+                break
+    return sorted(list(redundant))
+
+
+def remove_redundant_games(jogos):
+    """Retorna uma nova lista de jogos sem os que são redundantes (conteúdo em outro jogo)."""
+    red = set(find_redundant_games(jogos))
+    return [j for idx, j in enumerate(jogos) if idx not in red]
+
+
+def combinations_covered(jogos, k=6):
+    """Retorna o conjunto de combinações distintas de tamanho `k` cobertas pelos jogos.
+
+    Observação: para jogos muito grandes ou muitos jogos, isso pode consumir memória.
+    """
+    combos = set()
+    for jogo in jogos:
+        if len(jogo) < k:
+            continue
+        for comb in itertools.combinations(sorted(jogo), k):
+            combos.add(tuple(comb))
+    return combos
+
+
+def coverage_stats(jogos, k=6):
+    """Retorna o número de combinações distintas de tamanho `k` cobertas pelos jogos."""
+    return len(combinations_covered(jogos, k))
+
+
 if __name__ == "__main__":
-    print("Mega-Sena:")
-    for jogo in gerar_jogos(5, "megasena", fixos=[60], excluidos=[7, 13], seed=123):
-        print(jogo)
+    # Exemplo de uso e verificação
+    jogos = gerar_jogos(15, "megasena", dezenas_por_jogo=10, fixos=[7, 13], excluidos=[60], seed=42)
 
-    print("\nQuina:")
-    for jogo in gerar_jogos(5, "quina"):
-        print(jogo)
+    # Adiciona alguns jogos de demonstração (um é subconjunto de outro)
+    demo = [
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9],  # contém o anterior
+        [10, 11, 12, 13, 14, 15, 16],
+        [20, 21, 22, 23, 24, 25, 26, 27],
+    ]
+    jogos_all = jogos + demo
 
-    print("\nLotofácil:")
-    for jogo in gerar_jogos(3, "lotofacil", dezenas_por_jogo=18, excluidos=[13], seed=42):
-        print(jogo)
+    redundant = find_redundant_games(jogos_all)
+    print("Jogos gerados (total):", len(jogos_all))
+    print("Indices redundantes (conteúdo em outro jogo):", redundant)
+    print("Jogos sem redundância:")
+    for j in remove_redundant_games(jogos_all):
+        print(sorted(j))
+    print("Cobertura de combinações de 6 dezenas (únicas):", coverage_stats(jogos_all, 6))
